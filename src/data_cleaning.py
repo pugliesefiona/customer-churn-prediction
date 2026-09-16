@@ -2,58 +2,77 @@ import pandas as pd
 from pathlib import Path
 
 
-# Paths
+# Rutas de los archivos
 BASE_DIR = Path(__file__).resolve().parent.parent
-RAW_DATA = BASE_DIR / "data" / "raw" / "WA_Fn-UseC_-Telco-Customer-Churn.csv"
-PROCESSED_DATA = BASE_DIR / "data" / "processed" / "telco_churn_clean.csv"
+DATOS_ORIGINALES = (
+    BASE_DIR
+    / "data"
+    / "raw"
+    / "WA_Fn-UseC_-Telco-Customer-Churn.csv"
+)
+DATOS_PROCESADOS = (
+    BASE_DIR
+    / "data"
+    / "processed"
+    / "telco_churn_clean.csv"
+)
 
 
-def load_data():
-    """Load the raw Telco Customer Churn dataset."""
-    df = pd.read_csv(RAW_DATA)
-    return df
+def cargar_datos():
+    """Carga el dataset original de Telco Customer Churn."""
+    datos = pd.read_csv(DATOS_ORIGINALES)
+    return datos
 
 
-def clean_data(df):
-    """Clean and preprocess the dataset."""
+def limpiar_datos(datos):
+    """Limpia y prepara el dataset."""
 
-    # Remove leading/trailing spaces from column names
-    df.columns = df.columns.str.strip()
+    # Eliminar espacios al inicio y al final de los nombres de las columnas
+    datos.columns = datos.columns.str.strip()
 
-    # Convert TotalCharges to numeric
-    df["TotalCharges"] = pd.to_numeric(
-        df["TotalCharges"], errors="coerce"
+    # Convertir TotalCharges a valores numéricos
+    datos["TotalCharges"] = pd.to_numeric(
+        datos["TotalCharges"],
+        errors="coerce"
     )
 
-    # Remove rows with missing values
-    df = df.dropna()
+    # Eliminar filas con valores faltantes
+    datos = datos.dropna()
 
-    # Remove duplicate customer records
-    df = df.drop_duplicates()
+    # Eliminar registros de clientes duplicados
+    datos = datos.drop_duplicates()
 
-    return df
+    return datos
 
 
 def main():
-    df = load_data()
+    datos = cargar_datos()
 
-    print("Original dataset:")
-    print(f"Rows: {df.shape[0]}")
-    print(f"Columns: {df.shape[1]}")
+    print("Dataset original:")
+    print(f"Filas: {datos.shape[0]}")
+    print(f"Columnas: {datos.shape[1]}")
 
-    print("\nMissing values:")
-    print(df.isnull().sum())
+    print("\nValores faltantes:")
+    print(datos.isnull().sum())
 
-    df_clean = clean_data(df)
+    datos_limpios = limpiar_datos(datos)
 
-    print("\nClean dataset:")
-    print(f"Rows: {df_clean.shape[0]}")
-    print(f"Columns: {df_clean.shape[1]}")
+    print("\nDataset limpio:")
+    print(f"Filas: {datos_limpios.shape[0]}")
+    print(f"Columnas: {datos_limpios.shape[1]}")
 
-    PROCESSED_DATA.parent.mkdir(parents=True, exist_ok=True)
-    df_clean.to_csv(PROCESSED_DATA, index=False)
+    DATOS_PROCESADOS.parent.mkdir(
+        parents=True,
+        exist_ok=True
+    )
 
-    print(f"\nClean dataset saved to: {PROCESSED_DATA}")
+    datos_limpios.to_csv(
+        DATOS_PROCESADOS,
+        index=False
+    )
+
+    print(f"\nDataset limpio guardado en:")
+    print(DATOS_PROCESADOS)
 
 
 if __name__ == "__main__":
